@@ -1,0 +1,32 @@
+pipeline {
+    agent {
+        dockerfile {
+            dir '.ci'
+            label 'docker-executor'
+        }
+    }
+
+    stages {
+        stage('Build') {
+            parallel {
+                stage('Lint') {
+                    steps {
+                       sh 'make lint'
+                    }
+                }
+                stage('Main') {
+                    steps {
+                       sh 'make'
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            archive 'bin/server'
+            archive 'bin/collector'
+        }
+    }
+}
