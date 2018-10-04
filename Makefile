@@ -20,3 +20,8 @@ $(COLLECTOR): schemas
 
 $(PROTO_DIR)/%.pb.go: $(wildcard $(PROTO_DIR)/*.proto)
 	protoc -I $(PROTO_DIR) $(PROTO_DIR)/*.proto --go_out=plugins=grpc:$(PROTO_DIR)
+
+lint:
+	.ci/lint.sh
+
+.PHONY: lint
