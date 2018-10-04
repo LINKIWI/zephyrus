@@ -8,10 +8,12 @@ import (
 	"zephyrus/schemas"
 )
 
+// WeatherService is a server-side implementation of weather RPC calls.
 type WeatherService struct {
 	sensor device.Sensor
 }
 
+// GetTemperature reads the current temperature.
 func (s *WeatherService) GetTemperature(ctx context.Context, request *schemas.GetTemperatureRequest) (*schemas.GetTemperatureResponse, error) {
 	temperature, err := s.sensor.GetTemperature()
 	if err != nil {
@@ -21,6 +23,9 @@ func (s *WeatherService) GetTemperature(ctx context.Context, request *schemas.Ge
 	return &schemas.GetTemperatureResponse{Temperature: temperature}, nil
 }
 
+// StreamTemperature reads from the sensor multiple times and streams each reading individually back
+// to the client. The server-side behavior of this method varies based on the client-supplied
+// request parameters.
 func (s *WeatherService) StreamTemperature(request *schemas.GetTemperatureStreamRequest, stream schemas.Weather_StreamTemperatureServer) error {
 	var sample int32
 

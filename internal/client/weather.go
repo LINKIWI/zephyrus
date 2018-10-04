@@ -8,10 +8,12 @@ import (
 	"zephyrus/schemas"
 )
 
+// WeatherService provides client abstractions over the weather service.
 type WeatherService struct {
 	client schemas.WeatherClient
 }
 
+// GetTemperature reads the current temperature.
 func (s *WeatherService) GetTemperature() (float64, error) {
 	ctx := context.Background()
 	req := &schemas.GetTemperatureRequest{}

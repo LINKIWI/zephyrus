@@ -21,11 +21,11 @@ const TemperDeviceIOTime = 1 * time.Second
 // a USB-attached Temper device.
 type TemperClient struct {
 	// HID device backend.
-	device     hid.Device
+	device hid.Device
 	// Unique identifier, set by the user.
 	identifier string
 	// Current status of the device.
-	status     schemas.Status
+	status schemas.Status
 }
 
 // NewTemperClient attempts to find an attached Temper device and creates a client instance with

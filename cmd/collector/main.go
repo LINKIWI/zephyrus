@@ -9,7 +9,7 @@ import (
 	"zephyrus/internal/collector"
 )
 
-type Config struct {
+type config struct {
 	ZephyrusAddr string
 	StatsdAddr   string
 	SampleRate   float64
@@ -53,7 +53,7 @@ func main() {
 	}
 }
 
-func parseConfig() (*Config, error) {
+func parseConfig() (*config, error) {
 	zephyrusAddr := flag.String("zephyrus", "", "Address of the Zephyrus gRPC server")
 	statsdAddr := flag.String("statsd", "", "Address of the statsd server")
 	sampleRate := flag.Float64("sample-rate", 1.0, "Collection sample rate from the device")
@@ -67,7 +67,7 @@ func parseConfig() (*Config, error) {
 		return nil, errors.New("config: address of statsd server must be specified")
 	}
 
-	return &Config{
+	return &config{
 		ZephyrusAddr: *zephyrusAddr,
 		StatsdAddr:   *statsdAddr,
 		SampleRate:   *sampleRate,

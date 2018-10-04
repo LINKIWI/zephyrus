@@ -8,7 +8,7 @@ import (
 	"zephyrus/internal/server"
 )
 
-type Config struct {
+type config struct {
 	Port       int
 	Identifier string
 }
@@ -44,7 +44,7 @@ func main() {
 	}
 }
 
-func parseConfig() (*Config, error) {
+func parseConfig() (*config, error) {
 	port := flag.Int("port", 6840, "TCP port on which the gRPC server should listen")
 	identifier := flag.String(
 		"identifier",
@@ -53,7 +53,7 @@ func parseConfig() (*Config, error) {
 	)
 	flag.Parse()
 
-	return &Config{
+	return &config{
 		Port:       *port,
 		Identifier: *identifier,
 	}, nil

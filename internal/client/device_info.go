@@ -7,10 +7,12 @@ import (
 	"zephyrus/schemas"
 )
 
+// DeviceInfoService provides client abstractions over the device information service.
 type DeviceInfoService struct {
 	client schemas.DeviceInfoClient
 }
 
+// GetIdentifier gets the device identifier.
 func (s *DeviceInfoService) GetIdentifier() (string, error) {
 	ctx := context.Background()
 	req := &schemas.GetIdentifierRequest{}
@@ -23,6 +25,7 @@ func (s *DeviceInfoService) GetIdentifier() (string, error) {
 	return resp.Identifier, nil
 }
 
+// GetStatus gets the current status of the device.
 func (s *DeviceInfoService) GetStatus() (schemas.Status, error) {
 	ctx := context.Background()
 	req := &schemas.GetStatusRequest{}

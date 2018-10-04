@@ -13,7 +13,7 @@ type ZephyrusClient struct {
 	// DeviceInfo provides abstractions for reading device metadata.
 	DeviceInfo *DeviceInfoService
 	// Weather provides abstractions for reading and streaming weather information.
-	Weather    *WeatherService
+	Weather *WeatherService
 
 	// The underlying persistent connection to the server.
 	conn *grpc.ClientConn
