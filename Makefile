@@ -24,4 +24,8 @@ $(PROTO_DIR)/%.pb.go: $(wildcard $(PROTO_DIR)/*.proto)
 lint:
 	.ci/lint.sh
 
-.PHONY: lint
+clean:
+	rm -f $(PROTO_DIR)/*.pb.go
+	rm -f $(BIN_DIR)/*
+
+.PHONY: lint clean
