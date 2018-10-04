@@ -33,11 +33,13 @@ func NewTemperatureStatsdConsumer(deviceIdentifier string, addr string) (*Temper
 }
 
 // Consume ships the passed temperature to statsd as a gauge with properly formatted names and tags.
-func (c *TemperatureStatsdConsumer) Consume(temperature float64) {
+func (c *TemperatureStatsdConsumer) Consume(temperature float64) error {
 	metric := "collector.temperature"
 	tags := map[string]string{
 		"device": c.identifier,
 	}
 
 	c.client.Gauge(formatMetric(metric, tags), int64(1000.0*temperature), 1.0)
+
+	return nil
 }
