@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package schemas;
+
+service Weather {
+    // Read the current temperature from the sensor.
+    rpc GetTemperature (GetTemperatureRequest) returns (GetTemperatureResponse) {}
+
+    // Stream continuous temperature readings from the sensor.
+    rpc StreamTemperature (GetTemperatureStreamRequest) returns (stream GetTemperatureResponse) {}
+}
+
+message GetTemperatureRequest {}
+
+message GetTemperatureStreamRequest {
+    // Number of samples to read.
+    int32 samples = 1;
+
+    // Desired sample rate (number of sensor readings per second).
+    double sample_rate = 2;
+}
+
+message GetTemperatureResponse {
+    // Temperature, in celsius units.
+    double temperature = 1;
+}

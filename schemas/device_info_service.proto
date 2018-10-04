@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package schemas;
+
+service DeviceInfo {
+    // Get the unique device identifier string.
+    rpc GetIdentifier (GetIdentifierRequest) returns (GetIdentifierResponse) {}
+
+    // Get the current status of the device.
+    rpc GetStatus (GetStatusRequest) returns (GetStatusResponse) {}
+}
+
+// Describes potential device states.
+enum Status {
+    // Nothing interesting has happened yet.
+    UNKNOWN = 0;
+    // An attempt to interface with the device resulted in an kernel-level error.
+    ERROR = 1;
+    // A communication channel with the device was successfully opened.
+    OPENED = 2;
+    // An existing communication channel with the device was successfully closed.
+    CLOSED = 3;
+}
+
+message GetIdentifierRequest {}
+
+message GetIdentifierResponse {
+    // Unique identifier set for the device, either by the user or the hardware itself.
+    string identifier = 1;
+}
+
+message GetStatusRequest {}
+
+message GetStatusResponse {
+    // Status enum describing the current device state.
+    Status status = 1;
+}
