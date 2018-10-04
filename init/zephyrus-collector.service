@@ -1,0 +1,16 @@
+# systemd service for the Zephyrus collector.
+# Modify the command-line parameters as necessary before installing.
+
+[Unit]
+Description=Zephyrus collector
+After=network.target
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=root
+ExecStart=/usr/local/bin/zephyrus-collector --server localhost:6840 --statsd localhost:8125 --sample-rate 1.0
+
+[Install]
+WantedBy=multi-user.target
