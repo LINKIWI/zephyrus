@@ -18,16 +18,17 @@ However, the current implementation makes some assumptions specific to my partic
 
 ## Building
 
-Building requires the Go toolchain, version 1.11 or greater.
+Building requires the Go toolchain, version 1.11 or greater. It also requires a Protobuf compiler with the gRPC plugin to compile gRPC schemas.
 
 ```bash
 $ make
 # This will compile protobuf schemas, followed by the server and collector.
+# Optionally specify GOOS and/or GOARCH to cross-compile.
 ```
 
 ## Running
 
-Run `./bin/server --help` and `./bin/collector --help` for usage instructions. The two services can run on the same machine or different machines (as long as they are properly networked and the relevant ports are allowed through firewall).
+Run `./bin/zephyrus-server-$OS-$ARCH --help` and `./bin/zephyrus-collector-$OS-$ARCH --help` for usage instructions. The two services can run on the same machine or different machines (as long as they are properly networked and the relevant ports are allowed through firewall).
 
 Daemonize by editing `init/zephyrus-server.service` and `init/zephyrus-collector.service` as necessary and installing as a `systemd` service:
 
