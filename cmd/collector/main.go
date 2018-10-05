@@ -4,10 +4,15 @@ import (
 	"errors"
 	"flag"
 	"log"
+	"time"
 
 	"zephyrus/internal/client"
 	"zephyrus/internal/collector"
 )
+
+// RetryTimeout describes the amount of time to wait between connection retries to the server when
+// a connection error occurs.
+const RetryTimeout = 1 * time.Second
 
 type config struct {
 	ServerAddr string
@@ -48,8 +53,11 @@ func main() {
 	}
 
 	log.Printf("collector: starting collection")
-	if err := zephyrus.Weather.StreamTemperature(cfg.SampleRate, consumer); err != nil {
-		panic(err)
+	for {
+		if err := zephyrus.Weather.StreamTemperature(cfg.SampleRate, consumer); err != nil {
+			log.Printf("collector: temperature stream error error=%v", err)
+			time.Sleep(RetryTimeout)
+		}
 	}
 }
 
