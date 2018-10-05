@@ -7,16 +7,34 @@ pipeline {
     }
 
     stages {
+        stage('Install') {
+            steps {
+                sh 'go get -d ./...'
+            }
+        }
+        stage('Lint') {
+            steps {
+               sh 'make lint'
+            }
+        }
         stage('Build') {
             parallel {
-                stage('Lint') {
+                stage('linux/amd64') {
+                    environment {
+                        GOOS = 'linux'
+                        GOARCH = 'amd64'
+                    }
                     steps {
-                       sh 'make lint'
+                        sh 'make'
                     }
                 }
-                stage('Main') {
+                stage('linux/arm') {
+                    environment {
+                        GOOS = 'linux'
+                        GOARCH = 'arm'
+                    }
                     steps {
-                       sh 'make'
+                        sh 'make'
                     }
                 }
             }
