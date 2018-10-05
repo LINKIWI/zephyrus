@@ -2,6 +2,7 @@ package device
 
 import (
 	"fmt"
+	"sync"
 	"time"
 
 	"zephyrus/schemas"
@@ -26,6 +27,8 @@ type TemperClient struct {
 	identifier string
 	// Current status of the device.
 	status schemas.Status
+	// Mutex used to synchronize access to the device.
+	mutex sync.Mutex
 }
 
 // NewTemperClient attempts to find an attached Temper device and creates a client instance with
@@ -95,6 +98,9 @@ func (t *TemperClient) GetStatus() schemas.Status {
 // GetTemperature requests a temperature reading from the device and returns it as a float64 in
 // celsius units.
 func (t *TemperClient) GetTemperature() (float64, error) {
+	t.mutex.Lock()
+	defer t.mutex.Unlock()
+
 	readTempCmd := []byte{0x01, 0x80, 0x33, 0x01, 0x00, 0x00, 0x00, 0x00}
 
 	if _, err := t.device.Write(readTempCmd, TemperDeviceIOTime); err != nil {
