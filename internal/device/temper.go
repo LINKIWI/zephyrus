@@ -98,20 +98,31 @@ func (t *TemperClient) GetStatus() schemas.Status {
 // GetTemperature requests a temperature reading from the device and returns it as a float64 in
 // celsius units.
 func (t *TemperClient) GetTemperature() (float64, error) {
-	t.mutex.Lock()
-	defer t.mutex.Unlock()
-
+	// Black magic
 	readTempCmd := []byte{0x01, 0x80, 0x33, 0x01, 0x00, 0x00, 0x00, 0x00}
 
-	if _, err := t.device.Write(readTempCmd, TemperDeviceIOTime); err != nil {
-		return 0.0, fmt.Errorf("temper: %v", err)
-	}
-
-	buf, err := t.device.Read(-1, TemperDeviceIOTime)
+	resp, err := t.txRx(readTempCmd, TemperDeviceIOTime)
 	if err != nil {
 		return 0.0, fmt.Errorf("temper: %v", err)
 	}
 
-	temperature := (256*float64(buf[2]) + float64(buf[3])) / 100.0 // Celsius units
+	temperature := (256*float64(resp[2]) + float64(resp[3])) / 100.0 // Celsius units
 	return temperature, nil
+}
+
+// Write a byte sequence followed by reading from the device until EOF.
+func (t *TemperClient) txRx(writeCmd []byte, timeout time.Duration) ([]byte, error) {
+	t.mutex.Lock()
+	defer t.mutex.Unlock()
+
+	if _, err := t.device.Write(writeCmd, timeout); err != nil {
+		return nil, err
+	}
+
+	buf, err := t.device.Read(-1, timeout)
+	if err != nil {
+		return nil, err
+	}
+
+	return buf, nil
 }
