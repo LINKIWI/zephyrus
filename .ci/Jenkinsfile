@@ -10,6 +10,7 @@ pipeline {
         stage('Install') {
             steps {
                 sh 'go get -d ./...'
+                sh 'make dependencies'
             }
         }
         stage('Lint') {
