@@ -7,7 +7,10 @@ pipeline {
     }
 
     options {
-        withAWS(endpointUrl: 'https://storage.kevinlin.info', credentials: 'storage-internal')
+        withAWS(
+            endpointUrl: 'https://storage.kevinlin.info',
+            credentials: 'storage-internal',
+        )
     }
 
     stages {
@@ -44,11 +47,15 @@ pipeline {
                 }
             }
         }
-    }
-
-    post {
-        success {
-            archiveArtifacts artifacts: 'bin/*', fingerprint: true
+        stage('Release') {
+            steps {
+                sh 'tar -C bin -cvzf release.tar.gz ./'
+                s3Upload(
+                    bucket: 'internal',
+                    path: "deploy/${env.JOB_NAME}/${env.GIT_COMMIT}/",
+                    file: 'release.tar.gz',
+                )
+            }
         }
     }
 }
