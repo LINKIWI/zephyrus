@@ -6,6 +6,10 @@ pipeline {
         }
     }
 
+    options {
+        withAWS(endpointUrl: 'https://storage.kevinlin.info', credentials: 'storage-internal')
+    }
+
     stages {
         stage('Install') {
             steps {
