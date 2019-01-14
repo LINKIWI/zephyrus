@@ -24,9 +24,11 @@ func NewZephyrusServer(sensor device.Sensor) (*ZephyrusServer, error) {
 	grpcServer := grpc.NewServer()
 	deviceInfoService := &DeviceInfoService{sensor}
 	weatherService := &WeatherService{sensor}
+	metaService := &MetaService{}
 
 	schemas.RegisterDeviceInfoServer(grpcServer, deviceInfoService)
 	schemas.RegisterWeatherServer(grpcServer, weatherService)
+	schemas.RegisterMetaServer(grpcServer, metaService)
 	reflection.Register(grpcServer)
 
 	return &ZephyrusServer{server: grpcServer}, nil
