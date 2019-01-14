@@ -16,7 +16,7 @@ const TemperDeviceID = "413d:2107:0000:01"
 
 // TemperDeviceIOTime is a time.Duration describing the maximum allowed I/O time when reading or
 // writing from/to the device.
-const TemperDeviceIOTime = 1 * time.Second
+const TemperDeviceIOTime = 2 * time.Second
 
 // TemperClient is a small client library implementing the Sensor interface for interacting with
 // a USB-attached Temper device.
