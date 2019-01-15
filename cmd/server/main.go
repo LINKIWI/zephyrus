@@ -33,7 +33,7 @@ func main() {
 	defer temper.Close()
 
 	log.Printf("main: initializing Zephyrus gRPC server")
-	zephyrus, err := server.NewZephyrusServer(temper)
+	zephyrus, err := server.NewZephyrusServer(device.NewThrottledSensor(temper))
 	if err != nil {
 		panic(err)
 	}
