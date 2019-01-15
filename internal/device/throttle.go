@@ -11,7 +11,7 @@ const (
 	// Cache key used to identify temperature values from the device.
 	temperatureCacheKey = "sensor:temperature"
 	// Default TTL for cached temperature values.
-	temperatureCacheTTL = 500 * time.Millisecond
+	temperatureCacheTTL = 1 * time.Second
 )
 
 // ThrottledSensor implements the Sensor interface and wraps another Sensor, throttling request
