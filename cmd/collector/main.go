@@ -55,7 +55,11 @@ func main() {
 	log.Printf("collector: starting collection")
 	for {
 		if err := zephyrus.Weather.StreamTemperature(cfg.SampleRate, consumer); err != nil {
-			log.Printf("collector: temperature stream error error=%v", err)
+			log.Printf(
+				"collector: temperature stream error: device=%s error=%v",
+				identifier,
+				err,
+			)
 			time.Sleep(RetryTimeout)
 		}
 	}
