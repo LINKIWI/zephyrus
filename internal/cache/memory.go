@@ -1,12 +1,16 @@
 package cache
 
 import (
+	"sync"
 	"time"
 )
 
 // MemoryTTLCache is an in-memory key-value cache with TTL support.
 type MemoryTTLCache struct {
+	// Underlying data store.
 	store map[string]*cacheEntry
+	// Mutex used to synchronize reads and writes to the store.
+	mutex sync.Mutex
 }
 
 // cacheEntry is an internal data structure to represent an item in the cache.
@@ -24,6 +28,9 @@ func NewMemoryTTLCache() *MemoryTTLCache {
 
 // Get retrieves the value associated with a key. Returns the value if present and nil otherwise.
 func (m *MemoryTTLCache) Get(key string) interface{} {
+	m.mutex.Lock()
+	defer m.mutex.Unlock()
+
 	entry, ok := m.store[key]
 
 	if !ok {
@@ -31,7 +38,7 @@ func (m *MemoryTTLCache) Get(key string) interface{} {
 	}
 
 	if entry.isExpired() {
-		m.Delete(key)
+		delete(m.store, key)
 		return nil
 	}
 
@@ -41,6 +48,9 @@ func (m *MemoryTTLCache) Get(key string) interface{} {
 // Set writes a new or updated key-value pair to the cache, with the specified TTL.
 // Specify 0 as the TTL to never expire the cache entry.
 func (m *MemoryTTLCache) Set(key string, value interface{}, ttl time.Duration) {
+	m.mutex.Lock()
+	defer m.mutex.Unlock()
+
 	expiry := time.Unix(0, 0)
 	if ttl != 0 {
 		expiry = time.Now().Add(ttl)
@@ -54,6 +64,9 @@ func (m *MemoryTTLCache) Set(key string, value interface{}, ttl time.Duration) {
 
 // Delete deletes an entry from the cache. Returns true if an item was deleted; false otherwise.
 func (m *MemoryTTLCache) Delete(key string) bool {
+	m.mutex.Lock()
+	defer m.mutex.Unlock()
+
 	_, ok := m.store[key]
 
 	// Nothing to delete
