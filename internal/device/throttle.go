@@ -18,7 +18,7 @@ const (
 // volume to the actual device by protecting reads with an in-memory cache.
 type ThrottledSensor struct {
 	sensor Sensor
-	cache  *cache.MemoryTTLCache
+	cache  cache.TTLCache
 }
 
 // NewThrottledSensor creates a throttled sensor from another implementation of the same interface.
