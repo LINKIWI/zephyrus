@@ -6,7 +6,22 @@ import (
 
 	"zephyrus/internal/device"
 	"zephyrus/schemas"
+
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
+
+// transientFailureLimit describes the number of times the server is permitted to consecutively
+// retry a failed stream transmission before failing the stream entirely.
+const transientFailureLimit = 5
+
+// transientClientErrors describes error codes sent by the client during a stream that the
+// server may gracefully retry on.
+var transientClientErrors = []codes.Code{
+	codes.Internal,
+	codes.ResourceExhausted,
+	codes.Unavailable,
+}
 
 // WeatherService is a server-side implementation of weather RPC calls.
 type WeatherService struct {
@@ -29,6 +44,31 @@ func (s *WeatherService) GetTemperature(ctx context.Context, request *schemas.Ge
 func (s *WeatherService) StreamTemperature(request *schemas.GetTemperatureStreamRequest, stream schemas.Weather_StreamTemperatureServer) error {
 	var sample int32
 
+	// Abstraction to gracefully retry a client stream transmission, up to the maximum number of
+	// allowable consecutive failures.
+	send := func(response *schemas.GetTemperatureResponse) error {
+		var retryWrapper func(int) error
+
+		retryWrapper = func(failures int) error {
+			if err := stream.Send(response); err != nil {
+				if failures < transientFailureLimit {
+					for _, retryErr := range transientClientErrors {
+						if status.Code(err) == retryErr {
+							time.Sleep(1 * time.Second)
+							return retryWrapper(failures + 1)
+						}
+					}
+				}
+
+				return err
+			}
+
+			return nil
+		}
+
+		return retryWrapper(0)
+	}
+
 	// The temperature streaming behavior varies based on the number of requested samples:
 	//   < 0 -- noop
 	//   = 0 -- stream indefinitely
@@ -44,7 +84,10 @@ func (s *WeatherService) StreamTemperature(request *schemas.GetTemperatureStream
 			return err
 		}
 
-		stream.Send(&schemas.GetTemperatureResponse{Temperature: temperature})
+		err = send(&schemas.GetTemperatureResponse{Temperature: temperature})
+		if err != nil {
+			return err
+		}
 
 		if request.Samples > 0 {
 			sample++
